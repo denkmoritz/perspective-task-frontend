@@ -1,9 +1,10 @@
+// Updated script.js for enhanced task functionality
 const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
 
 let tasks = [];
 let currentTaskIndex = 0;
 let participantName = "";
-let selectedAngle = 0;
+let selectedAngle = null; // Track selected angle
 
 const INSTRUCTION_TEXT = `
     This is a test of your ability to imagine different perspectives or orientations in space.
@@ -17,20 +18,17 @@ const radius = 150; // Circle radius
 canvas.width = 400;
 canvas.height = 400;
 
-// Object positions around the circle
-const positions = [
-    { name: "tree", angle: 90 },
-    { name: "cat", angle: 45 },
-    { name: "car", angle: 0 },
-    { name: "traffic light", angle: -45 },
-    { name: "stop sign", angle: -90 },
-    { name: "flower", angle: -135 },
-    { name: "house", angle: -180 },
-    { name: "tree", angle: -225 }
-];
+// Helper: Convert mouse click to angle
+function getClickAngle(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left - canvas.width / 2;
+    const y = canvas.height / 2 - (event.clientY - rect.top);
+    const angle = Math.atan2(y, x) * (180 / Math.PI);
+    return (angle + 360) % 360; // Normalize angle
+}
 
-// Draw the circle with object names
-function drawCircle(isExample) {
+// Draw the circle with specific labels
+function drawCircle(from, to, target) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw circle
@@ -45,25 +43,22 @@ function drawCircle(isExample) {
     ctx.strokeStyle = "black";
     ctx.stroke();
 
-    // Draw object names
-    positions.forEach((pos) => {
+    // Draw specific labels
+    const labels = [
+        { name: from, angle: 0 },
+        { name: to, angle: 180 },
+        { name: target, angle: 90 },
+    ];
+
+    labels.forEach((label) => {
         const x =
-            canvas.width / 2 + radius * Math.cos((pos.angle * Math.PI) / 180);
+            canvas.width / 2 + radius * Math.cos((label.angle * Math.PI) / 180);
         const y =
-            canvas.height / 2 - radius * Math.sin((pos.angle * Math.PI) / 180);
+            canvas.height / 2 - radius * Math.sin((label.angle * Math.PI) / 180);
         ctx.font = "14px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(pos.name, x, y);
+        ctx.fillText(label.name, x, y);
     });
-
-    // Draw example line (if applicable)
-    if (isExample) {
-        ctx.beginPath();
-        ctx.moveTo(canvas.width / 2, canvas.height / 2);
-        ctx.lineTo(canvas.width / 2 + radius * 0.7, canvas.height / 2 - radius * 0.7);
-        ctx.strokeStyle = "orange";
-        ctx.stroke();
-    }
 }
 
 // Fetch tasks
@@ -93,9 +88,9 @@ document
 function loadTask(index) {
     const task = tasks[index];
     if (index === 0) {
-        drawCircle(true); // Example task
+        drawCircle("tree", "car", "cat"); // Example task
     } else {
-        drawCircle(false);
+        drawCircle(task.from, task.to, task.target);
     }
 
     document.getElementById("taskSection").style.display = "block";
@@ -103,13 +98,30 @@ function loadTask(index) {
         Imagine you're standing at the ${task.from}, facing the ${task.to}.
         Point to the ${task.target}.
     `;
+
+    canvas.addEventListener("click", handleCanvasClick);
+}
+
+// Handle canvas click
+function handleCanvasClick(event) {
+    selectedAngle = getClickAngle(event);
+
+    // Draw selected angle
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, canvas.height / 2);
+    ctx.lineTo(
+        canvas.width / 2 + radius * Math.cos((selectedAngle * Math.PI) / 180),
+        canvas.height / 2 - radius * Math.sin((selectedAngle * Math.PI) / 180)
+    );
+    ctx.strokeStyle = "orange";
+    ctx.stroke();
 }
 
 // Submit response
 document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
-        if (!selectedAngle) {
+        if (selectedAngle === null) {
             alert("Draw your input first.");
             return;
         }
@@ -121,8 +133,8 @@ document
                 body: JSON.stringify({
                     name: participantName,
                     task_id: task.id,
-                    logged_angle: selectedAngle, // Ensure 'selectedAngle' is properly initialized
-                }), // <- Ensure this comma is necessary here
+                    logged_angle: selectedAngle,
+                }),
             });
 
             const result = await response.json();
