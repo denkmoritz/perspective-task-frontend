@@ -84,6 +84,7 @@ document.getElementById("startTask").addEventListener("click", () => {
     document.getElementById("instructionsText").innerText = INSTRUCTION_TEXT;
 });
 
+// Proceed to task
 document
     .getElementById("proceedToTask")
     .addEventListener("click", () => loadTask(currentTaskIndex));
@@ -109,5 +110,20 @@ document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
         if (!selectedAngle) return alert("Draw your input first.");
-        const res = await fetch(
-            `${apiBaseUrl}.json`;
+        const task = tasks[currentTaskIndex];
+        const response = await fetch(`${apiBaseUrl}/submit_response`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: participantName,
+                task_id: task.id,
+                logged_angle: selectedAngle
+            })
+        });
+        const result = await response.json();
+        if (result.error) {
+            alert(`Error: ${result.error}`);
+        }
+        currentTaskIndex++;
+        loadTask(currentTaskIndex);
+    });
