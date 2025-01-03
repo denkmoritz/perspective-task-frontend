@@ -106,24 +106,44 @@ function loadTask(index) {
 }
 
 // Submit response
+// Submit response
 document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
-        if (!selectedAngle) return alert("Draw your input first.");
-        const task = tasks[currentTaskIndex];
-        const response = await fetch(`${apiBaseUrl}/submit_response`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: participantName,
-                task_id: task.id,
-                logged_angle: selectedAngle
-            })
-        });
-        const result = await response.json();
-        if (result.error) {
-            alert(`Error: ${result.error}`);
+        if (!selectedAngle) {
+            alert("Draw your input first.");
+            return;
         }
-        currentTaskIndex++;
-        loadTask(currentTaskIndex);
+        const task = tasks[currentTaskIndex];
+        try {
+            const response = await fetch(`${apiBaseUrl}/submit_response`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: participantName,
+                    task_id: task.id,
+                    logged_angle: selectedAngle,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                alert(`Error: ${result.error}`);
+                return;
+            }
+
+            // Move to the next task
+            currentTaskIndex++;
+            if (currentTaskIndex < tasks.length) {
+                loadTask(currentTaskIndex);
+            } else {
+                alert("All tasks completed. Thank you!");
+                document.getElementById("taskSection").style.display = "none";
+                fetchResults();
+            }
+        } catch (error) {
+            console.error("Error submitting response:", error);
+            alert("Failed to submit response. Please try again later.");
+        }
     });
