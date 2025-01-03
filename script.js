@@ -106,7 +106,6 @@ function loadTask(index) {
 }
 
 // Submit response
-// Submit response
 document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
@@ -122,8 +121,8 @@ document
                 body: JSON.stringify({
                     name: participantName,
                     task_id: task.id,
-                    logged_angle: selectedAngle,
-                }),
+                    logged_angle: selectedAngle, // Ensure 'selectedAngle' is properly initialized
+                }), // <- Ensure this comma is necessary here
             });
 
             const result = await response.json();
