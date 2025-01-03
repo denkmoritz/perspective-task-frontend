@@ -1,32 +1,26 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    text-align: center;
 }
 
 h1, h2 {
     color: #333;
-    text-align: center;
-}
-
-#taskImage {
-    display: block;
-    margin: 20px auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    max-width: 80%;
+    margin-bottom: 20px;
 }
 
 form, #taskSection, #resultSection {
-    text-align: center;
-    margin-top: 20px;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
 }
 
-input[type="text"], input[type="number"] {
-    padding: 8px;
-    margin: 10px 0;
+input[type="text"] {
     width: 80%;
     max-width: 300px;
-    box-sizing: border-box;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
 }
 
 button {
@@ -34,10 +28,30 @@ button {
     background-color: #28a745;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
 }
 
 button:hover {
     background-color: #218838;
+}
+
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 5px;
 }
