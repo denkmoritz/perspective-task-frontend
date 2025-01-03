@@ -5,6 +5,7 @@ body {
 
 h1, h2 {
     color: #333;
+    text-align: center;
 }
 
 #taskImage {
@@ -13,4 +14,30 @@ h1, h2 {
     border: 1px solid #ddd;
     border-radius: 5px;
     max-width: 80%;
+}
+
+form, #taskSection, #resultSection {
+    text-align: center;
+    margin-top: 20px;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 8px;
+    margin: 10px 0;
+    width: 80%;
+    max-width: 300px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
 }
