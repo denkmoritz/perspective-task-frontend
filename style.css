@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -11,10 +12,12 @@ h1, h2 {
 
 form, #taskSection, #resultSection {
     margin: 20px auto;
-    width: 80%;
+    width: 90%;
     max-width: 600px;
+    text-align: center;
 }
 
+/* Input Field */
 input[type="text"] {
     width: 80%;
     max-width: 300px;
@@ -23,6 +26,7 @@ input[type="text"] {
     font-size: 16px;
 }
 
+/* Buttons */
 button {
     padding: 10px 20px;
     background-color: #28a745;
@@ -31,22 +35,52 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    margin-top: 15px;
 }
 
 button:hover {
     background-color: #218838;
 }
 
+/* Task Section Layout */
+#taskSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+}
+
+/* Task Descriptions */
+#taskDescription, #taskDescriptionBelow {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 10px auto;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Task Image */
+#taskImage {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin: 10px 0;
+    display: block;
+}
+
+/* Canvas Container */
 .canvas-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 20px auto;
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
     height: auto;
 }
 
+/* Canvas Styles */
 canvas {
     width: 100%;
     height: auto;

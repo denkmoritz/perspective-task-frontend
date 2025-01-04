@@ -134,11 +134,15 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
 
 // Add task text description
 function updateTaskDescription(task) {
-    document.getElementById("taskDescription").innerText = `
+    const descriptionText = `
         Imagine you are standing at the ${task.from}.
         Facing the ${task.to}.
         Point to the ${task.target}.
     `;
+    
+    // Update both the above and below descriptions
+    document.getElementById("taskDescription").innerText = descriptionText;
+    document.getElementById("taskDescriptionBelow").innerText = descriptionText;
 }
 
 // Showcase Example (Task 0)
