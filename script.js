@@ -1,4 +1,4 @@
-// Updated script.js for response submission fix with validated angles
+// Updated script.js to ensure correct angle submission
 const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
 
 let tasks = [];
@@ -148,6 +148,7 @@ function endDrag(event) {
     isDragging = false;
 }
 
+// Submit response
 document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
@@ -157,7 +158,8 @@ document
         }
 
         const roundedAngle = Math.round(selectedAngle); // Ensure angle is an integer
-        console.log("Submitting angle:", roundedAngle);
+        const normalizedAngle = (roundedAngle + 360) % 360; // Normalize angle
+        console.log("Submitting angle:", normalizedAngle);
 
         const task = tasks[currentTaskIndex];
         try {
@@ -167,7 +169,7 @@ document
                 body: JSON.stringify({
                     name: participantName,
                     task_id: task.id,
-                    logged_angle: roundedAngle,
+                    logged_angle: normalizedAngle, // Submit normalized angle
                 }),
             });
 
