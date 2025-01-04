@@ -79,6 +79,14 @@ async function fetchTasks() {
     try {
         const response = await fetch(`${apiBaseUrl}/tasks`);
         tasks = await response.json();
+
+        if (tasks.length === 0) {
+            alert("No tasks available from the server.");
+            return;
+        }
+
+        // Enable "Proceed to Tasks" button after successful fetch
+        document.getElementById("proceedToTask").disabled = false;
     } catch (error) {
         alert("Could not load tasks. Please try again.");
         console.error("Error fetching tasks:", error);
@@ -109,12 +117,12 @@ document
 
 // Load task
 function loadTask(index) {
-    const task = tasks[index];
-    if (!task) {
+    if (!tasks || tasks.length === 0 || !tasks[index]) {
         alert("Task data is not available. Please refresh the page.");
         return;
     }
 
+    const task = tasks[index];
     drawCircle(task.from, task.to);
 
     document.getElementById("taskSection").style.display = "block";
