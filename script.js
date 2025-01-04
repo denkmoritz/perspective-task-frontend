@@ -149,50 +149,43 @@ function endDrag(event) {
 }
 
 // Submit response
-document
-    .getElementById("submitResponse")
-    .addEventListener("click", async () => {
-        if (selectedAngle === null) {
-            alert("Drag the line to set your input.");
-            return;
-        }
+document.getElementById("submitResponse").addEventListener("click", async () => {
+    if (selectedAngle === null) {
+        alert("Drag the line to set your input.");
+        return;
+    }
 
-        const roundedAngle = Math.round(selectedAngle); // Ensure angle is an integer
-        const normalizedAngle = (roundedAngle + 360) % 360; // Normalize angle
-        console.log("Submitting angle:", normalizedAngle);
+    const roundedAngle = Math.round(selectedAngle);
+    const normalizedAngle = (roundedAngle + 360) % 360; // Normalize angle
 
-        const task = tasks[currentTaskIndex];
-        try {
-            const response = await fetch(`${apiBaseUrl}/submit_response`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: participantName,
-                    task_id: task.id,
-                    logged_angle: normalizedAngle, // Submit normalized angle
-                }),
-            });
+    const task = tasks[currentTaskIndex];
+    try {
+        const response = await fetch(`${apiBaseUrl}/submit_response`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: participantName,
+                task_id: task.id,
+                logged_angle: normalizedAngle,
+            }),
+        });
 
-            const result = await response.json();
-
-            console.log("Response from backend:", result);
-
-            if (result.error) {
-                alert(`Error: ${result.error}`);
-                return;
-            }
-
-            // Move to the next task
+        // Move to next task if submission succeeds
+        if (response.status === 204) {
             currentTaskIndex++;
             if (currentTaskIndex < tasks.length) {
-                loadTask(currentTaskIndex);
+                loadTask(currentTaskIndex); // Load next task
             } else {
                 alert("All tasks completed. Thank you!");
                 document.getElementById("taskSection").style.display = "none";
-                fetchResults();
+                fetchResults(); // Show results
             }
-        } catch (error) {
-            console.error("Error submitting response:", error);
-            alert("Failed to submit response. Please try again later.");
+        } else {
+            console.error("Unexpected response:", response);
+            alert("Failed to submit response. Please try again.");
         }
-    });
+    } catch (error) {
+        console.error("Error submitting response:", error);
+        alert("Failed to submit response. Please try again later.");
+    }
+});
