@@ -40,12 +40,12 @@ function getMouseAngle(event) {
 function drawCircle(from, to) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the circle
+    // Draw circle
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
     ctx.stroke();
 
-    // Draw the north line
+    // Draw north line
     ctx.beginPath();
     ctx.moveTo(canvas.width / 2, canvas.height / 2);
     ctx.lineTo(canvas.width / 2, canvas.height / 2 - radius);
@@ -58,14 +58,16 @@ function drawCircle(from, to) {
     ctx.fillText(from, canvas.width / 2, canvas.height / 2); // Center label
     ctx.fillText(to, canvas.width / 2, canvas.height / 2 - radius - 20); // Top label
 
-    // Determine the angle for the line
+    // Retrieve the current task and calculate the angle
     const task = tasks[currentTaskIndex];
     if (!task) {
-        console.error("No task data available for the current index.");
+        console.error("No task data available for current index.");
         return;
     }
 
-    const angle = currentTaskIndex === 0 ? task.angle : selectedAngle;
+    // Adjust angle for canvas orientation (0° = north, clockwise rotation)
+    let angle = currentTaskIndex === 0 ? task.angle : selectedAngle;
+    angle = (90 - angle + 360) % 360; // Rotate angle to make 0° point north
 
     if (angle !== null) {
         // Calculate line endpoint
@@ -90,6 +92,7 @@ function drawCircle(from, to) {
         ctx.fillText(task.target, labelX, labelY);
     }
 }
+
 
 // Fetch tasks
 async function fetchTasks() {
