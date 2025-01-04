@@ -116,6 +116,7 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             // Move to the next task
             currentTaskIndex++;
             if (currentTaskIndex < tasks.length) {
+                selectedAngle = null; // Reset angle for the new task
                 drawTaskCircle(tasks[currentTaskIndex]);
                 updateTaskDescription(tasks[currentTaskIndex]); // Add task text
             } else {
@@ -123,7 +124,8 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
                 document.getElementById("taskSection").style.display = "none";
                 fetchResults();
             }
-        } else {
+        }
+         else {
             alert("Failed to submit response. Please try again.");
         }
     } catch (error) {
@@ -155,9 +157,12 @@ function drawShowcaseCircle(task) {
     document.getElementById("submitResponse").style.display = "none";
 }
 
-// Actual Tasks (Task 1+)
+
 function drawTaskCircle(task) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Reset the selected angle to start at the top for each new task
+    selectedAngle = null;
 
     // Draw the base circle
     drawBaseCircle(task.from, task.to);
@@ -168,11 +173,9 @@ function drawTaskCircle(task) {
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
 
-    // Draw the draggable line if a selected angle exists
-    if (selectedAngle !== null) {
-        drawLineAndLabel(selectedAngle, task.target, "orange");
-    }
+    // Since selectedAngle is reset, no draggable line is drawn initially
 }
+
 
 // Draw the base circle and labels
 function drawBaseCircle(from, to) {
