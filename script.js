@@ -1,4 +1,4 @@
-// Updated script.js for draggable line functionality and improved label placement
+// Updated script.js for responsive circle, improved label placement, dynamic target visibility, and task descriptions
 const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
 
 let tasks = [];
@@ -15,10 +15,19 @@ const INSTRUCTION_TEXT = `
 
 const canvas = document.getElementById("circleCanvas");
 const ctx = canvas.getContext("2d");
-const radius = 150; // Circle radius
-canvas.width = 400;
-canvas.height = 400;
-let dragStartAngle = null;
+let radius = 150; // Circle radius, will adjust dynamically
+resizeCanvas();
+
+// Adjust canvas size responsively
+window.addEventListener("resize", resizeCanvas);
+function resizeCanvas() {
+    canvas.width = Math.min(window.innerWidth * 0.8, 400);
+    canvas.height = canvas.width;
+    radius = canvas.width / 3;
+    if (tasks.length > 0) {
+        drawCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to);
+    }
+}
 
 // Helper: Convert mouse position to angle
 function getMouseAngle(event) {
@@ -30,7 +39,7 @@ function getMouseAngle(event) {
 }
 
 // Draw the circle with specific labels
-function drawCircle(from, to, target) {
+function drawCircle(from, to) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw circle
@@ -45,18 +54,15 @@ function drawCircle(from, to, target) {
     ctx.strokeStyle = "black";
     ctx.stroke();
 
-    // Draw specific labels
+    // Draw labels
     const labelPositions = [
-        { name: from, angle: 0 },
-        { name: to, angle: 180 },
-        { name: target, angle: 90 },
+        { name: from, xOffset: 0, yOffset: 0 }, // Center
+        { name: to, xOffset: 0, yOffset: -radius - 20 }, // Top
     ];
 
     labelPositions.forEach((label) => {
-        const x =
-            canvas.width / 2 + (radius + 20) * Math.cos((label.angle * Math.PI) / 180);
-        const y =
-            canvas.height / 2 - (radius + 20) * Math.sin((label.angle * Math.PI) / 180);
+        const x = canvas.width / 2 + (label.xOffset || 0);
+        const y = canvas.height / 2 + (label.yOffset || 0);
         ctx.font = "14px Arial";
         ctx.textAlign = "center";
         ctx.fillText(label.name, x, y);
@@ -72,6 +78,14 @@ function drawCircle(from, to, target) {
         );
         ctx.strokeStyle = "orange";
         ctx.stroke();
+
+        // Display target label dynamically
+        const target = tasks[currentTaskIndex].target;
+        const targetX =
+            canvas.width / 2 + (radius + 20) * Math.cos((selectedAngle * Math.PI) / 180);
+        const targetY =
+            canvas.height / 2 - (radius + 20) * Math.sin((selectedAngle * Math.PI) / 180);
+        ctx.fillText(target, targetX, targetY);
     }
 }
 
@@ -101,15 +115,12 @@ document
 // Load task
 function loadTask(index) {
     const task = tasks[index];
-    if (index === 0) {
-        drawCircle("flower", "tree", "cat"); // Example task
-    } else {
-        drawCircle(task.from, task.to, task.target);
-    }
+    drawCircle(task.from, task.to); // Draw circle with labels
 
     document.getElementById("taskSection").style.display = "block";
     document.getElementById("taskDescription").innerText = `
-        Imagine you're standing at the ${task.from}, facing the ${task.to}.
+        Imagine you are standing at the ${task.from}.
+        Facing the ${task.to}.
         Point to the ${task.target}.
     `;
 
@@ -122,21 +133,19 @@ function loadTask(index) {
 // Handle drag start
 function startDrag(event) {
     isDragging = true;
-    dragStartAngle = getMouseAngle(event);
 }
 
 // Handle dragging
 function dragLine(event) {
     if (!isDragging) return;
     selectedAngle = getMouseAngle(event);
-    drawCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to, tasks[currentTaskIndex].target);
+    drawCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to);
 }
 
 // Handle drag end
 function endDrag(event) {
     if (!isDragging) return;
     isDragging = false;
-    dragStartAngle = null;
 }
 
 // Submit response
