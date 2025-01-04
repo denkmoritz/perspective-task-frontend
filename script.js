@@ -1,16 +1,13 @@
-// Updated script.js to ensure correct angle submission
-const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
-
 let tasks = [];
-let currentTaskIndex = 0;
+let currentTaskIndex = 0; // Start with Task 0 (Showcase)
 let participantName = "";
 let selectedAngle = null; // Track selected angle
 let isDragging = false; // Track dragging state
 
 const INSTRUCTION_TEXT = `
     This is a test of your ability to imagine different perspectives or orientations in space.
-    For each question, imagine that you are standing at one object, facing another, and
-    pointing to a third object. Drag the line to indicate the direction.
+    For Task 0, the line will already be set to the correct position as an example.
+    For the actual tasks, you will need to drag the line to indicate the direction.
 `;
 
 const canvas = document.getElementById("circleCanvas");
@@ -68,23 +65,25 @@ function drawCircle(from, to) {
         ctx.fillText(label.name, x, y);
     });
 
-    // Draw draggable line if angle is set
-    if (selectedAngle !== null) {
+    // Draw draggable line
+    const task = tasks[currentTaskIndex];
+    const angle = currentTaskIndex === 0 ? task.angle : selectedAngle; // Correct angle for Task 0
+    if (angle !== null) {
         ctx.beginPath();
         ctx.moveTo(canvas.width / 2, canvas.height / 2);
         ctx.lineTo(
-            canvas.width / 2 + radius * Math.cos((selectedAngle * Math.PI) / 180),
-            canvas.height / 2 - radius * Math.sin((selectedAngle * Math.PI) / 180)
+            canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180),
+            canvas.height / 2 - radius * Math.sin((angle * Math.PI) / 180)
         );
-        ctx.strokeStyle = "orange";
+        ctx.strokeStyle = currentTaskIndex === 0 ? "green" : "orange"; // Green for Task 0
         ctx.stroke();
 
         // Display target label dynamically
         const target = tasks[currentTaskIndex].target;
         const targetX =
-            canvas.width / 2 + (radius + 20) * Math.cos((selectedAngle * Math.PI) / 180);
+            canvas.width / 2 + (radius + 20) * Math.cos((angle * Math.PI) / 180);
         const targetY =
-            canvas.height / 2 - (radius + 20) * Math.sin((selectedAngle * Math.PI) / 180);
+            canvas.height / 2 - (radius + 20) * Math.sin((angle * Math.PI) / 180);
         ctx.fillText(target, targetX, targetY);
     }
 }
@@ -107,7 +106,7 @@ document.getElementById("startTask").addEventListener("click", () => {
     document.getElementById("instructionsText").innerText = INSTRUCTION_TEXT;
 });
 
-// Proceed to task
+// Proceed to Task 0 (Showcase Example)
 document
     .getElementById("proceedToTask")
     .addEventListener("click", () => loadTask(currentTaskIndex));
@@ -124,11 +123,27 @@ function loadTask(index) {
         Point to the ${task.target}.
     `;
 
-    canvas.addEventListener("mousedown", startDrag);
-    canvas.addEventListener("mousemove", dragLine);
-    canvas.addEventListener("mouseup", endDrag);
-    canvas.addEventListener("mouseleave", endDrag);
+    // For tasks 1 and onward, allow dragging
+    if (index > 0) {
+        canvas.addEventListener("mousedown", startDrag);
+        canvas.addEventListener("mousemove", dragLine);
+        canvas.addEventListener("mouseup", endDrag);
+        canvas.addEventListener("mouseleave", endDrag);
+    } else {
+        document.getElementById("submitResponse").style.display = "none";
+        document.getElementById("startActualTasks").style.display = "block";
+    }
 }
+
+// Start the actual tasks
+document
+    .getElementById("startActualTasks")
+    .addEventListener("click", () => {
+        currentTaskIndex = 1; // Move to Task 1
+        document.getElementById("startActualTasks").style.display = "none";
+        document.getElementById("submitResponse").style.display = "block";
+        loadTask(currentTaskIndex);
+    });
 
 // Handle drag start
 function startDrag(event) {
@@ -155,8 +170,9 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
         return;
     }
 
-    const roundedAngle = Math.round(selectedAngle);
+    const roundedAngle = Math.round(selectedAngle); // Ensure angle is an integer
     const normalizedAngle = (roundedAngle + 360) % 360; // Normalize angle
+    console.log("Submitting angle:", normalizedAngle);
 
     const task = tasks[currentTaskIndex];
     try {
@@ -166,23 +182,25 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             body: JSON.stringify({
                 name: participantName,
                 task_id: task.id,
-                logged_angle: normalizedAngle,
+                logged_angle: normalizedAngle, // Submit normalized angle
             }),
         });
 
-        // Move to next task if submission succeeds
-        if (response.status === 204) {
-            currentTaskIndex++;
-            if (currentTaskIndex < tasks.length) {
-                loadTask(currentTaskIndex); // Load next task
-            } else {
-                alert("All tasks completed. Thank you!");
-                document.getElementById("taskSection").style.display = "none";
-                fetchResults(); // Show results
-            }
+        const result = await response.json();
+
+        if (result.error) {
+            alert(`Error: ${result.error}`);
+            return;
+        }
+
+        // Move to the next task
+        currentTaskIndex++;
+        if (currentTaskIndex < tasks.length) {
+            loadTask(currentTaskIndex);
         } else {
-            console.error("Unexpected response:", response);
-            alert("Failed to submit response. Please try again.");
+            alert("All tasks completed. Thank you!");
+            document.getElementById("taskSection").style.display = "none";
+            fetchResults();
         }
     } catch (error) {
         console.error("Error submitting response:", error);
