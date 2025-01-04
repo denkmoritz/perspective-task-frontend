@@ -148,7 +148,6 @@ function endDrag(event) {
     isDragging = false;
 }
 
-// Submit response
 document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
@@ -158,6 +157,7 @@ document
         }
 
         const roundedAngle = Math.round(selectedAngle); // Ensure angle is an integer
+        console.log("Submitting angle:", roundedAngle);
 
         const task = tasks[currentTaskIndex];
         try {
@@ -167,11 +167,13 @@ document
                 body: JSON.stringify({
                     name: participantName,
                     task_id: task.id,
-                    logged_angle: roundedAngle, // Submit rounded angle
+                    logged_angle: roundedAngle,
                 }),
             });
 
             const result = await response.json();
+
+            console.log("Response from backend:", result);
 
             if (result.error) {
                 alert(`Error: ${result.error}`);
