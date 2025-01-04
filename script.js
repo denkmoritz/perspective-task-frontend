@@ -44,7 +44,10 @@ async function fetchTasks() {
             return;
         }
 
-        // Enable "Proceed to Tasks" button after successful fetch
+        // Automatically load the showcase example (Task 0)
+        drawShowcaseCircle(tasks[0]);
+
+        // Enable "Proceed to Tasks" button
         document.getElementById("proceedToTask").disabled = false;
     } catch (error) {
         alert("Could not load tasks. Please try again.");
@@ -68,14 +71,12 @@ document.getElementById("startTask").addEventListener("click", () => {
 });
 
 // Proceed to Task 0 (Showcase Example)
-document
-    .getElementById("proceedToTask")
-    .addEventListener("click", () => {
-        currentTaskIndex = 0; // Start with Task 0
-        drawShowcaseCircle(tasks[0]);
-        document.getElementById("instructionSection").style.display = "none";
-        document.getElementById("taskSection").style.display = "block";
-    });
+document.getElementById("proceedToTask").addEventListener("click", () => {
+    currentTaskIndex = 0; // Start with Task 0
+    drawShowcaseCircle(tasks[0]); // Showcase example
+    document.getElementById("instructionSection").style.display = "none";
+    document.getElementById("taskSection").style.display = "block";
+});
 
 // Start the actual tasks
 document
@@ -146,17 +147,19 @@ function drawShowcaseCircle(task) {
 function drawTaskCircle(task) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the circle and north line
+    // Draw the base circle
     drawBaseCircle(task.from, task.to);
 
-    // Add drag event listeners for the task
-    canvas.addEventListener("mousedown", startDrag);
-    canvas.addEventListener("mousemove", dragLine);
-    canvas.addEventListener("mouseup", endDrag);
-    canvas.addEventListener("mouseleave", endDrag);
+    // Add event listeners for dragging
+    canvas.onmousedown = startDrag;
+    canvas.onmousemove = dragLine;
+    canvas.onmouseup = endDrag;
+    canvas.onmouseleave = endDrag;
 
-    // Reset the selected angle for dragging
-    selectedAngle = null;
+    // Draw the draggable line if a selected angle exists
+    if (selectedAngle !== null) {
+        drawLineAndLabel(selectedAngle, task.target, "orange");
+    }
 }
 
 // Draw the base circle and labels
@@ -215,11 +218,15 @@ function dragLine(event) {
     const x = event.clientX - rect.left - canvas.width / 2;
     const y = canvas.height / 2 - (event.clientY - rect.top);
 
+    // Calculate the angle dynamically
     let angle = Math.atan2(y, x) * (180 / Math.PI);
-    angle = (90 - angle + 360) % 360;
+    angle = (90 - angle + 360) % 360; // Adjust angle for canvas orientation
 
-    selectedAngle = angle;
-    drawTaskCircle(tasks[currentTaskIndex]); // Redraw the task with the updated line
+    selectedAngle = angle; // Update selected angle
+
+    // Redraw the task with the updated draggable line
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBaseCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to);
     drawLineAndLabel(selectedAngle, tasks[currentTaskIndex].target, "orange");
 }
 
