@@ -1,4 +1,4 @@
-const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
+const apiBaseUrl = "https://perspective-task-backend.onrender.com";
 
 let tasks = [];
 let currentTaskIndex = 0; // Start with Task 0 (Showcase)
