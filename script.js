@@ -160,13 +160,12 @@ function drawTaskCircle(task) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Reset the line for the new task
-    selectedAngle = null;
+    selectedAngle = 90; // Top of the circle
 
     // Draw the base circle
     drawBaseCircle(task.from, task.to);
 
-    // Optional: Draw a placeholder line (e.g., pointing north)
-    selectedAngle = 0; // Default angle pointing north
+    // Draw the line pointing to the top
     drawLineAndLabel(selectedAngle, task.target, "gray");
 
     // Add event listeners for dragging
