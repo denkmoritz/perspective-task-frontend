@@ -145,60 +145,49 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
     }
 });
 
-// Add task text description
-function updateTaskDescription(task) {
-    if (!task) {
-        console.error("Task is undefined");
-        return;
-    }
-
-    const descriptionText = `
-        Imagine you are standing at the ${task.from}.
-        Facing the ${task.to}.
-        Point to the ${task.target}.
-    `;
-    document.getElementById("taskDescription").innerText = descriptionText;
-}
-
-// Showcase Example (Task 0)
+// Draw Showcase Task (Task 0)
 function drawShowcaseCircle(task) {
-    if (!task) {
-        console.error("Task is undefined");
-        return;
-    }
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the base circle
     drawBaseCircle(task.from, task.to);
 
+    // Pre-set the line to the correct angle
     const angle = (90 - task.angle + 360) % 360;
     drawLineAndLabel(angle, task.target, "green");
     document.getElementById("startActualTasks").style.display = "block";
     document.getElementById("submitResponse").style.display = "none";
 }
 
-// Actual Tasks (Task 1+)
+// Draw Task for Actual Tasks (Task 1+)
 function drawTaskCircle(task) {
-    if (!task) {
-        console.error("Task is undefined");
-        return;
-    }
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    selectedAngle = null;
 
-    canvas.onmousedown = null;
-    canvas.onmousemove = null;
-    canvas.onmouseup = null;
-    canvas.onmouseleave = null;
-
+    // Draw the base circle
     drawBaseCircle(task.from, task.to);
 
+    // Add event listeners for dragging
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragLine;
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
+
+    // Draw the draggable line if a selected angle exists
+    if (selectedAngle !== null) {
+        drawLineAndLabel(selectedAngle, task.target, "orange");
+    }
 }
 
+// Update task description
+function updateTaskDescription(task) {
+    document.getElementById("taskDescription").innerText = `
+        Imagine you are standing at the ${task.from}.
+        Facing the ${task.to}.
+        Point to the ${task.target}.
+    `;
+}
+
+// Draw the base circle and labels
 function drawBaseCircle(from, to) {
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
@@ -216,6 +205,7 @@ function drawBaseCircle(from, to) {
     ctx.fillText(to, canvas.width / 2, canvas.height / 2 - radius - 20);
 }
 
+// Draw line and label
 function drawLineAndLabel(angle, label, color) {
     const lineEndX =
         canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180);
@@ -236,15 +226,14 @@ function drawLineAndLabel(angle, label, color) {
     ctx.fillText(label, labelX, labelY);
 }
 
+// Dragging functionality
 function startDrag(event) {
     isDragging = true;
 
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left - canvas.width / 2;
     const mouseY = canvas.height / 2 - (event.clientY - rect.top);
-
-    // Calculate the initial drag angle
-    dragStartMouseAngle = Math.atan2(-mouseY, mouseX) * (180 / Math.PI); // Negative Y for top reference
+    dragStartMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
     dragStartAngle = selectedAngle !== null ? selectedAngle : 0;
 }
 
@@ -254,18 +243,16 @@ function dragLine(event) {
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left - canvas.width / 2;
     const mouseY = canvas.height / 2 - (event.clientY - rect.top);
+    const currentMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
 
-    const angle = Math.atan2(-mouseY, mouseX) * (180 / Math.PI); // Negative Y for top reference
-    selectedAngle = (90 - angle + 360) % 360;
+    selectedAngle = (90 - currentMouseAngle + 360) % 360;
 
     const currentTask = tasks[currentTaskIndex];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBaseCircle(currentTask?.from, currentTask?.to);
-    drawLineAndLabel(selectedAngle, currentTask?.target, "orange");
+    drawBaseCircle(currentTask.from, currentTask.to);
+    drawLineAndLabel(selectedAngle, currentTask.target, "orange");
 }
 
 function endDrag() {
     isDragging = false;
-    dragStartMouseAngle = null;
-    dragStartAngle = null;
 }
