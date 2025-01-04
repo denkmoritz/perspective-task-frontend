@@ -159,19 +159,21 @@ function drawShowcaseCircle(task) {
 function drawTaskCircle(task) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Reset the line for the new task
+    selectedAngle = null;
+
     // Draw the base circle
     drawBaseCircle(task.from, task.to);
+
+    // Optional: Draw a placeholder line (e.g., pointing north)
+    selectedAngle = 0; // Default angle pointing north
+    drawLineAndLabel(selectedAngle, task.target, "gray");
 
     // Add event listeners for dragging
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragLine;
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
-
-    // Draw the draggable line if a selected angle exists
-    if (selectedAngle !== null) {
-        drawLineAndLabel(selectedAngle, task.target, "orange");
-    }
 }
 
 // Draw the base circle and labels
