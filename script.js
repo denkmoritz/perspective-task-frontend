@@ -1,15 +1,16 @@
-// Updated script.js for enhanced task functionality
+// Updated script.js for draggable line functionality and improved label placement
 const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
 
 let tasks = [];
 let currentTaskIndex = 0;
 let participantName = "";
 let selectedAngle = null; // Track selected angle
+let isDragging = false; // Track dragging state
 
 const INSTRUCTION_TEXT = `
     This is a test of your ability to imagine different perspectives or orientations in space.
     For each question, imagine that you are standing at one object, facing another, and
-    pointing to a third object. Use the circle below to select the direction.
+    pointing to a third object. Drag the line to indicate the direction.
 `;
 
 const canvas = document.getElementById("circleCanvas");
@@ -17,9 +18,10 @@ const ctx = canvas.getContext("2d");
 const radius = 150; // Circle radius
 canvas.width = 400;
 canvas.height = 400;
+let dragStartAngle = null;
 
-// Helper: Convert mouse click to angle
-function getClickAngle(event) {
+// Helper: Convert mouse position to angle
+function getMouseAngle(event) {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left - canvas.width / 2;
     const y = canvas.height / 2 - (event.clientY - rect.top);
@@ -44,21 +46,33 @@ function drawCircle(from, to, target) {
     ctx.stroke();
 
     // Draw specific labels
-    const labels = [
+    const labelPositions = [
         { name: from, angle: 0 },
         { name: to, angle: 180 },
         { name: target, angle: 90 },
     ];
 
-    labels.forEach((label) => {
+    labelPositions.forEach((label) => {
         const x =
-            canvas.width / 2 + radius * Math.cos((label.angle * Math.PI) / 180);
+            canvas.width / 2 + (radius + 20) * Math.cos((label.angle * Math.PI) / 180);
         const y =
-            canvas.height / 2 - radius * Math.sin((label.angle * Math.PI) / 180);
+            canvas.height / 2 - (radius + 20) * Math.sin((label.angle * Math.PI) / 180);
         ctx.font = "14px Arial";
         ctx.textAlign = "center";
         ctx.fillText(label.name, x, y);
     });
+
+    // Draw draggable line if angle is set
+    if (selectedAngle !== null) {
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
+        ctx.lineTo(
+            canvas.width / 2 + radius * Math.cos((selectedAngle * Math.PI) / 180),
+            canvas.height / 2 - radius * Math.sin((selectedAngle * Math.PI) / 180)
+        );
+        ctx.strokeStyle = "orange";
+        ctx.stroke();
+    }
 }
 
 // Fetch tasks
@@ -88,7 +102,7 @@ document
 function loadTask(index) {
     const task = tasks[index];
     if (index === 0) {
-        drawCircle("tree", "car", "cat"); // Example task
+        drawCircle("flower", "tree", "cat"); // Example task
     } else {
         drawCircle(task.from, task.to, task.target);
     }
@@ -99,22 +113,30 @@ function loadTask(index) {
         Point to the ${task.target}.
     `;
 
-    canvas.addEventListener("click", handleCanvasClick);
+    canvas.addEventListener("mousedown", startDrag);
+    canvas.addEventListener("mousemove", dragLine);
+    canvas.addEventListener("mouseup", endDrag);
+    canvas.addEventListener("mouseleave", endDrag);
 }
 
-// Handle canvas click
-function handleCanvasClick(event) {
-    selectedAngle = getClickAngle(event);
+// Handle drag start
+function startDrag(event) {
+    isDragging = true;
+    dragStartAngle = getMouseAngle(event);
+}
 
-    // Draw selected angle
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, canvas.height / 2);
-    ctx.lineTo(
-        canvas.width / 2 + radius * Math.cos((selectedAngle * Math.PI) / 180),
-        canvas.height / 2 - radius * Math.sin((selectedAngle * Math.PI) / 180)
-    );
-    ctx.strokeStyle = "orange";
-    ctx.stroke();
+// Handle dragging
+function dragLine(event) {
+    if (!isDragging) return;
+    selectedAngle = getMouseAngle(event);
+    drawCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to, tasks[currentTaskIndex].target);
+}
+
+// Handle drag end
+function endDrag(event) {
+    if (!isDragging) return;
+    isDragging = false;
+    dragStartAngle = null;
 }
 
 // Submit response
@@ -122,7 +144,7 @@ document
     .getElementById("submitResponse")
     .addEventListener("click", async () => {
         if (selectedAngle === null) {
-            alert("Draw your input first.");
+            alert("Drag the line to set your input.");
             return;
         }
         const task = tasks[currentTaskIndex];
