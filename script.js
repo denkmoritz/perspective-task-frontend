@@ -149,7 +149,7 @@ function drawShowcaseCircle(task) {
     drawBaseCircle(task.from, task.to);
 
     // Pre-set the line to the correct angle
-    const angle = (90 - task.angle + 360) % 360;
+    const angle = (90 - task.angle + 360) % 360; // Adjust Task 0's predefined angle
     drawLineAndLabel(angle, task.target, "green");
     document.getElementById("startActualTasks").style.display = "block";
     document.getElementById("submitResponse").style.display = "none";
