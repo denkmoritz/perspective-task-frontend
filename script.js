@@ -78,6 +78,7 @@ document
         drawShowcaseCircle(tasks[0]); // Showcase example
         document.getElementById("instructionSection").style.display = "none";
         document.getElementById("taskSection").style.display = "block";
+        updateTaskDescription(tasks[0]); // Add task text
     });
 
 // Start the actual tasks
@@ -88,6 +89,7 @@ document
         drawTaskCircle(tasks[currentTaskIndex]);
         document.getElementById("startActualTasks").style.display = "none";
         document.getElementById("submitResponse").style.display = "block";
+        updateTaskDescription(tasks[currentTaskIndex]); // Add task text
     });
 
 // Submit response for actual tasks
@@ -117,6 +119,7 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             currentTaskIndex++;
             if (currentTaskIndex < tasks.length) {
                 drawTaskCircle(tasks[currentTaskIndex]);
+                updateTaskDescription(tasks[currentTaskIndex]); // Add task text
             } else {
                 alert("All tasks completed. Thank you!");
                 document.getElementById("taskSection").style.display = "none";
@@ -130,6 +133,15 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
         console.error("Error submitting response:", error);
     }
 });
+
+// Add task text description
+function updateTaskDescription(task) {
+    document.getElementById("taskDescription").innerText = `
+        Imagine you are standing at the ${task.from}.
+        Facing the ${task.to}.
+        Point to the ${task.target}.
+    `;
+}
 
 // Showcase Example (Task 0)
 function drawShowcaseCircle(task) {
@@ -220,7 +232,7 @@ function dragLine(event) {
     const x = event.clientX - rect.left - canvas.width / 2;
     const y = canvas.height / 2 - (event.clientY - rect.top);
 
-    let angle = Math.atan2(y, x) * (180 / Math.PI);
+    let angle = Math.atan2(-y, x) * (180 / Math.PI); // Reverse y for clockwise dragging
     angle = (90 - angle + 360) % 360;
 
     selectedAngle = angle; // Update selected angle
