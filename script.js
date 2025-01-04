@@ -244,13 +244,18 @@ function startDrag(event) {
 function dragLine(event) {
     if (!isDragging) return;
 
+    // Get the mouse position relative to the canvas center
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left - canvas.width / 2;
-    const mouseY = canvas.height / 2 - (event.clientY - rect.top);
-    const currentMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
+    const mouseY = canvas.height / 2 - (event.clientY - rect.top); // Inverted Y-axis
 
-    selectedAngle = (dragStartAngle + (currentMouseAngle - dragStartMouseAngle) + 360) % 360;
+    // Calculate the angle in degrees
+    const angle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
 
+    // Adjust the angle: 0 degrees at the top, increasing clockwise
+    selectedAngle = (90 - angle + 360) % 360;
+
+    // Redraw the circle with the updated line
     const currentTask = tasks[currentTaskIndex];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBaseCircle(currentTask?.from, currentTask?.to);
