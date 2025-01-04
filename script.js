@@ -41,7 +41,7 @@ async function fetchTasks() {
         const response = await fetch(`${apiBaseUrl}/tasks`);
         tasks = await response.json();
 
-        if (tasks.length === 0) {
+        if (!tasks || tasks.length === 0) {
             alert("No tasks available from the server.");
             return;
         }
@@ -75,19 +75,27 @@ document.getElementById("startTask").addEventListener("click", () => {
 // Proceed to Task 0 (Showcase Example)
 document.getElementById("proceedToTask").addEventListener("click", () => {
     currentTaskIndex = 0; // Start with Task 0
-    drawShowcaseCircle(tasks[0]); // Showcase example
-    document.getElementById("instructionSection").style.display = "none";
-    document.getElementById("taskSection").style.display = "block";
-    updateTaskDescription(tasks[0]); // Add task text
+    if (tasks[0]) {
+        drawShowcaseCircle(tasks[0]); // Showcase example
+        document.getElementById("instructionSection").style.display = "none";
+        document.getElementById("taskSection").style.display = "block";
+        updateTaskDescription(tasks[0]); // Add task text
+    } else {
+        alert("Task 0 is not available. Please try again later.");
+    }
 });
 
 // Start the actual tasks
 document.getElementById("startActualTasks").addEventListener("click", () => {
     currentTaskIndex = 1; // Start Task 1
-    drawTaskCircle(tasks[currentTaskIndex]);
-    document.getElementById("startActualTasks").style.display = "none";
-    document.getElementById("submitResponse").style.display = "block";
-    updateTaskDescription(tasks[currentTaskIndex]); // Add task text
+    if (tasks[currentTaskIndex]) {
+        drawTaskCircle(tasks[currentTaskIndex]);
+        document.getElementById("startActualTasks").style.display = "none";
+        document.getElementById("submitResponse").style.display = "block";
+        updateTaskDescription(tasks[currentTaskIndex]); // Add task text
+    } else {
+        alert("No further tasks available.");
+    }
 });
 
 // Submit response for actual tasks
@@ -134,6 +142,11 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
 
 // Add task text description
 function updateTaskDescription(task) {
+    if (!task) {
+        console.error("Task is undefined");
+        return;
+    }
+
     const descriptionText = `
         Imagine you are standing at the ${task.from}.
         Facing the ${task.to}.
@@ -147,6 +160,11 @@ function updateTaskDescription(task) {
 
 // Showcase Example (Task 0)
 function drawShowcaseCircle(task) {
+    if (!task) {
+        console.error("Task is undefined");
+        return;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw the circle and north line
@@ -161,6 +179,11 @@ function drawShowcaseCircle(task) {
 
 // Actual Tasks (Task 1+)
 function drawTaskCircle(task) {
+    if (!task) {
+        console.error("Task is undefined");
+        return;
+    }
+
     // Clear the canvas and reset draggable state
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     selectedAngle = null; // Reset selected angle
@@ -185,19 +208,16 @@ function drawTaskCircle(task) {
 
 // Draw the base circle and labels
 function drawBaseCircle(from, to) {
-    // Draw the circle
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
     ctx.stroke();
 
-    // Draw the north line
     ctx.beginPath();
     ctx.moveTo(canvas.width / 2, canvas.height / 2);
     ctx.lineTo(canvas.width / 2, canvas.height / 2 - radius);
     ctx.strokeStyle = "black";
     ctx.stroke();
 
-    // Draw labels
     ctx.font = "14px Arial";
     ctx.textAlign = "center";
     ctx.fillText(from, canvas.width / 2, canvas.height / 2);
@@ -211,14 +231,12 @@ function drawLineAndLabel(angle, label, color) {
     const lineEndY =
         canvas.height / 2 - radius * Math.sin((angle * Math.PI) / 180);
 
-    // Draw the line
     ctx.beginPath();
     ctx.moveTo(canvas.width / 2, canvas.height / 2);
     ctx.lineTo(lineEndX, lineEndY);
     ctx.strokeStyle = color;
     ctx.stroke();
 
-    // Draw the label
     const labelX =
         canvas.width / 2 + (radius + 20) * Math.cos((angle * Math.PI) / 180);
     const labelY =
@@ -231,33 +249,29 @@ function drawLineAndLabel(angle, label, color) {
 function startDrag(event) {
     isDragging = true;
 
-    // Calculate the angle of the mouse relative to the circle center
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left - canvas.width / 2;
-    const mouseY = canvas.height / 2 - (event.clientY - rect.top); // Inverted Y-axis
+    const mouseY = canvas.height / 2 - (event.clientY - rect.top);
     dragStartMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
-
-    // Save the starting angle of the draggable line
     dragStartAngle = selectedAngle !== null ? selectedAngle : 0;
 }
 
 function dragLine(event) {
     if (!isDragging) return;
 
-    // Calculate the new mouse angle relative to the circle center
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left - canvas.width / 2;
-    const mouseY = canvas.height / 2 - (event.clientY - rect.top); // Inverted Y-axis
+    const mouseY = canvas.height / 2 - (event.clientY - rect.top);
     const currentMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
 
-    // Calculate the new angle for the line
     selectedAngle = (dragStartAngle + (currentMouseAngle - dragStartMouseAngle) + 360) % 360;
 
-    // Redraw the circle and line dynamically
     const currentTask = tasks[currentTaskIndex];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBaseCircle(currentTask.from, currentTask.to);
-    drawLineAndLabel(selectedAngle, currentTask.target, "orange");
+    drawBaseCircle(currentTask?.from, currentTask?.to);
+    if (selectedAngle !== null) {
+        drawLineAndLabel(selectedAngle, currentTask?.target, "orange");
+    }
 }
 
 function endDrag() {
