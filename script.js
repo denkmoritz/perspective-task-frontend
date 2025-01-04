@@ -33,8 +33,12 @@ function getMouseAngle(event) {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left - canvas.width / 2;
     const y = canvas.height / 2 - (event.clientY - rect.top);
-    const angle = Math.atan2(y, x) * (180 / Math.PI);
-    return (angle + 360) % 360; // Normalize angle
+
+    // Calculate angle using atan2 and adjust for canvas orientation
+    let angle = Math.atan2(y, x) * (180 / Math.PI); // Get angle in degrees
+    angle = (90 - angle + 360) % 360; // Adjust to make 0° point "north" and ensure clockwise rotation
+
+    return angle; // Return normalized angle
 }
 
 function drawCircle(from, to) {
@@ -185,6 +189,8 @@ function startDrag(event) {
 // Handle dragging
 function dragLine(event) {
     if (!isDragging) return;
+
+    // Update the selected angle dynamically as the user drags
     selectedAngle = getMouseAngle(event);
     drawCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to);
 }
