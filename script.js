@@ -1,4 +1,4 @@
-const apiBaseUrl = "https://perspective-task-backend.onrender.com"; 
+const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
 
 let tasks = [];
 let currentTaskIndex = 0; // Start with Task 0 (Showcase)
@@ -131,6 +131,8 @@ function loadTask(index) {
         canvas.addEventListener("mousemove", dragLine);
         canvas.addEventListener("mouseup", endDrag);
         canvas.addEventListener("mouseleave", endDrag);
+        document.getElementById("submitResponse").style.display = "block";
+        document.getElementById("startActualTasks").style.display = "none";
     } else {
         document.getElementById("submitResponse").style.display = "none";
         document.getElementById("startActualTasks").style.display = "block";
@@ -188,21 +190,19 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             }),
         });
 
-        const result = await response.json();
-
-        if (result.error) {
-            alert(`Error: ${result.error}`);
-            return;
-        }
-
-        // Move to the next task
-        currentTaskIndex++;
-        if (currentTaskIndex < tasks.length) {
-            loadTask(currentTaskIndex);
+        if (response.status === 204) {
+            // Move to the next task
+            currentTaskIndex++;
+            if (currentTaskIndex < tasks.length) {
+                loadTask(currentTaskIndex);
+            } else {
+                alert("All tasks completed. Thank you!");
+                document.getElementById("taskSection").style.display = "none";
+                fetchResults();
+            }
         } else {
-            alert("All tasks completed. Thank you!");
-            document.getElementById("taskSection").style.display = "none";
-            fetchResults();
+            console.error("Unexpected response:", response);
+            alert("Failed to submit response. Please try again.");
         }
     } catch (error) {
         console.error("Error submitting response:", error);
