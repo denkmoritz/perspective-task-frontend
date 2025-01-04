@@ -3,54 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perspective Taking Task</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Perspective Taking Test</title>
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        img {
+            max-width: 400px; /* Slightly larger for object array */
+            display: block;
+            margin: 20px auto;
+        }
+        button, input {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #name-section, #instruction, #example-section, #task-section {
+            font-size: 16px;
+            margin: 20px;
+            display: none;
+        }
+    </style>    
 </head>
 <body>
-    <h1>Perspective Taking Task</h1>
-    <form id="taskForm">
-        <label for="name">Enter your name:</label>
-        <input type="text" id="name" name="name" required>
-        <button type="button" id="startTask">Start Task</button>
-    </form>
+    <h1>Perspective Taking Test</h1>
 
-    <div id="instructionSection" style="display:none;">
-        <h2>Instructions</h2>
-        <p id="instructionsText"></p>
-        <button type="button" id="proceedToTask">Proceed to Tasks</button>
+    <div id="name-section">
+        <p>Please enter your name to start:</p>
+        <input type="text" id="name-input" placeholder="Enter your name" required>
+        <button id="start-button">Start</button>
     </div>
 
-    <div id="taskSection" style="display:none;">
-        <h2>Task</h2>
-        
-        <!-- Task Instructions Above -->
-        <p id="taskDescription" class="task-instructions"></p>
-        
-        <!-- Task Layout: Image on Left, Canvas on Right -->
-        <div class="task-container">
-            <div class="task-image">
-                <img src="images/object_array.png" alt="Object Array" id="taskImage">
-            </div>
-            <div class="task-canvas">
-                <div class="canvas-container">
-                    <canvas id="circleCanvas"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Start Actual Tasks Button -->
-        <button type="button" id="startActualTasks" style="display:none;">Start Actual Tasks</button>
-        
-        <!-- Submit Response Button -->
-        <button type="button" id="submitResponse">Submit Response</button>
-    </div>    
-
-    <div id="resultSection" style="display:none;">
-        <h2>Results</h2>
-        <p id="resultsSummary"></p>
-        <canvas id="resultsChart"></canvas>
+    <div id="instruction">
+        <p>This is a test of your ability to imagine different perspectives or orientations in space.</p>
+        <p>
+            For Task 0, the line will already be set to the correct position as an example.<br>
+            For the actual tasks, you will need to drag the line to indicate the direction.
+        </p>
+        <button id="example-button">To the Example</button>
     </div>
 
-    <script src="script.js" defer></script>
+    <div id="example-section">
+        <img id="object-array" src="object_array.png" alt="Object Array">
+        <canvas id="circle-canvas" width="400" height="400"></canvas> <!-- Smaller canvas -->
+        <p id="task-info"></p>
+        <button id="start-tasks-button">Start Tasks</button>
+    </div>
+
+    <div id="task-section">
+        <img id="object-array-task" src="object_array.png" alt="Object Array">
+        <canvas id="circle-canvas-task" width="400" height="400"></canvas> <!-- Smaller canvas -->
+        <p id="task-info-task"></p>
+        <button id="submit-button">Submit</button>
+    </div>
 </body>
 </html>
