@@ -149,7 +149,7 @@ function drawShowcaseCircle(task) {
     drawBaseCircle(task.from, task.to);
 
     // Pre-set the line to the correct angle
-    const angle = (90 - task.angle + 360) % 360; // Adjust Task 0's predefined angle
+    const angle = (90 - task.angle + 360) % 360;
     drawLineAndLabel(angle, task.target, "green");
     document.getElementById("startActualTasks").style.display = "block";
     document.getElementById("submitResponse").style.display = "none";
@@ -159,20 +159,19 @@ function drawShowcaseCircle(task) {
 function drawTaskCircle(task) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Reset the line for the new task
-    selectedAngle = 0; // Logical 0 degrees corresponds to the top
-
     // Draw the base circle
     drawBaseCircle(task.from, task.to);
-
-    // Draw the line pointing to the top
-    drawLineAndLabel(selectedAngle, task.target, "gray");
 
     // Add event listeners for dragging
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragLine;
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
+
+    // Draw the draggable line if a selected angle exists
+    if (selectedAngle !== null) {
+        drawLineAndLabel(selectedAngle, task.target, "orange");
+    }
 }
 
 // Draw the base circle and labels
@@ -198,13 +197,10 @@ function drawBaseCircle(from, to) {
 
 // Draw the line and label dynamically
 function drawLineAndLabel(angle, label, color) {
-    // Adjust angle so 0 degrees corresponds to the top of the circle
-    const adjustedAngle = (angle - 90 + 360) % 360;
-
     const lineEndX =
-        canvas.width / 2 + radius * Math.cos((adjustedAngle * Math.PI) / 180);
+        canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180);
     const lineEndY =
-        canvas.height / 2 - radius * Math.sin((adjustedAngle * Math.PI) / 180);
+        canvas.height / 2 - radius * Math.sin((angle * Math.PI) / 180);
 
     // Draw the line
     ctx.beginPath();
@@ -215,9 +211,9 @@ function drawLineAndLabel(angle, label, color) {
 
     // Draw the label
     const labelX =
-        canvas.width / 2 + (radius + 20) * Math.cos((adjustedAngle * Math.PI) / 180);
+        canvas.width / 2 + (radius + 20) * Math.cos((angle * Math.PI) / 180);
     const labelY =
-        canvas.height / 2 - (radius + 20) * Math.sin((adjustedAngle * Math.PI) / 180);
+        canvas.height / 2 - (radius + 20) * Math.sin((angle * Math.PI) / 180);
 
     ctx.fillText(label, labelX, labelY);
 }
