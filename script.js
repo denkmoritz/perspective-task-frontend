@@ -5,6 +5,8 @@ let currentTaskIndex = 0; // Start with Task 0 (Showcase)
 let participantName = "";
 let selectedAngle = null; // Track selected angle for actual tasks
 let isDragging = false; // Track dragging state
+let dragStartAngle = null; // Store the initial angle of the drag
+let dragStartMouseAngle = null; // Store the mouse angle at drag start
 
 const INSTRUCTION_TEXT = `
     This is a test of your ability to imagine different perspectives or orientations in space.
@@ -218,4 +220,41 @@ function drawLineAndLabel(angle, label, color) {
         canvas.height / 2 - (radius + 20) * Math.sin((angle * Math.PI) / 180);
 
     ctx.fillText(label, labelX, labelY);
+}
+
+// Dragging functionality
+function startDrag(event) {
+    isDragging = true;
+
+    // Calculate the angle of the mouse relative to the circle center
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left - canvas.width / 2;
+    const mouseY = canvas.height / 2 - (event.clientY - rect.top); // Inverted Y-axis
+    dragStartMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
+
+    // Save the starting angle of the draggable line
+    dragStartAngle = selectedAngle !== null ? selectedAngle : 0;
+}
+
+function dragLine(event) {
+    if (!isDragging) return;
+
+    // Calculate the new mouse angle relative to the circle center
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left - canvas.width / 2;
+    const mouseY = canvas.height / 2 - (event.clientY - rect.top); // Inverted Y-axis
+    const currentMouseAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
+
+    // Calculate the new angle for the line
+    selectedAngle = (dragStartAngle + (currentMouseAngle - dragStartMouseAngle) + 360) % 360;
+
+    // Redraw the circle and line dynamically
+    const currentTask = tasks[currentTaskIndex];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBaseCircle(currentTask.from, currentTask.to);
+    drawLineAndLabel(selectedAngle, currentTask.target, "orange");
+}
+
+function endDrag() {
+    isDragging = false;
 }
