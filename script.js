@@ -8,11 +8,11 @@ let isDragging = false; // Track dragging state
 let dragStartAngle = null; // Store the initial angle of the drag
 let dragStartMouseAngle = null; // Store the mouse angle at drag start
 
-const INSTRUCTION_TEXT = `
+const INSTRUCTION_TEXT = 
     This is a test of your ability to imagine different perspectives or orientations in space.
     For Task 0, the line will already be set to the correct position as an example.
     For the actual tasks, you will need to drag the line to indicate the direction.
-`;
+;
 
 const canvas = document.getElementById("circleCanvas");
 const ctx = canvas.getContext("2d");
@@ -38,7 +38,7 @@ function resizeCanvas() {
 // Fetch tasks and automatically load the showcase example
 async function fetchTasks() {
     try {
-        const response = await fetch(`${apiBaseUrl}/tasks`);
+        const response = await fetch(${apiBaseUrl}/tasks);
         tasks = await response.json();
 
         if (tasks.length === 0) {
@@ -102,7 +102,7 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
 
     const task = tasks[currentTaskIndex];
     try {
-        const response = await fetch(`${apiBaseUrl}/submit_response`, {
+        const response = await fetch(${apiBaseUrl}/submit_response, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -116,7 +116,6 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             // Move to the next task
             currentTaskIndex++;
             if (currentTaskIndex < tasks.length) {
-                selectedAngle = null; // Reset the selected angle for the new task
                 drawTaskCircle(tasks[currentTaskIndex]);
                 updateTaskDescription(tasks[currentTaskIndex]); // Add task text
             } else {
@@ -135,16 +134,15 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
 
 // Add task text description
 function updateTaskDescription(task) {
-    document.getElementById("taskDescription").innerText = `
+    document.getElementById("taskDescription").innerText = 
         Imagine you are standing at the ${task.from}.
         Facing the ${task.to}.
         Point to the ${task.target}.
-    `;
+    ;
 }
 
 // Showcase Example (Task 0)
 function drawShowcaseCircle(task) {
-    selectedAngle = null; // Reset the selected angle for the showcase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw the circle and north line
@@ -159,7 +157,6 @@ function drawShowcaseCircle(task) {
 
 // Actual Tasks (Task 1+)
 function drawTaskCircle(task) {
-    selectedAngle = null; // Reset the selected angle for the new task
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw the base circle
@@ -171,7 +168,10 @@ function drawTaskCircle(task) {
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
 
-    // Do not draw the line initially since selectedAngle is reset
+    // Draw the draggable line if a selected angle exists
+    if (selectedAngle !== null) {
+        drawLineAndLabel(selectedAngle, task.target, "orange");
+    }
 }
 
 // Draw the base circle and labels
