@@ -116,7 +116,7 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             body: JSON.stringify({
                 name: participantName,
                 task_id: task.id,
-                logged_angle: normalizedAngle,
+                logged_angle: normalizedAngle, // Send logged_angle directly
             }),
         });
 
