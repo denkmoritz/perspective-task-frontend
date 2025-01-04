@@ -116,15 +116,15 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             // Move to the next task
             currentTaskIndex++;
             if (currentTaskIndex < tasks.length) {
-                drawTaskCircle(tasks[currentTaskIndex]); // This will reset and start at angle 0
+                selectedAngle = null; // Reset the selected angle for the new task
+                drawTaskCircle(tasks[currentTaskIndex]);
                 updateTaskDescription(tasks[currentTaskIndex]); // Add task text
             } else {
                 alert("All tasks completed. Thank you!");
                 document.getElementById("taskSection").style.display = "none";
                 fetchResults();
             }
-        }        
-        else {
+        } else {
             alert("Failed to submit response. Please try again.");
         }
     } catch (error) {
@@ -144,6 +144,7 @@ function updateTaskDescription(task) {
 
 // Showcase Example (Task 0)
 function drawShowcaseCircle(task) {
+    selectedAngle = null; // Reset the selected angle for the showcase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw the circle and north line
@@ -156,26 +157,22 @@ function drawShowcaseCircle(task) {
     document.getElementById("submitResponse").style.display = "none";
 }
 
-
+// Actual Tasks (Task 1+)
 function drawTaskCircle(task) {
+    selectedAngle = null; // Reset the selected angle for the new task
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Reset the line to the default starting angle (e.g., 0 degrees)
-    selectedAngle = 0;
 
     // Draw the base circle
     drawBaseCircle(task.from, task.to);
-
-    // Draw the line at the default starting angle
-    drawLineAndLabel(selectedAngle, task.target, "orange");
 
     // Add event listeners for dragging
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragLine;
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
-}
 
+    // Do not draw the line initially since selectedAngle is reset
+}
 
 // Draw the base circle and labels
 function drawBaseCircle(from, to) {
