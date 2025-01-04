@@ -157,21 +157,26 @@ function drawShowcaseCircle(task) {
 
 // Actual Tasks (Task 1+)
 function drawTaskCircle(task) {
+    // Clear the canvas and reset draggable state
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    selectedAngle = null; // Reset selected angle
+
+    // Remove previous listeners to avoid duplication
+    canvas.onmousedown = null;
+    canvas.onmousemove = null;
+    canvas.onmouseup = null;
+    canvas.onmouseleave = null;
 
     // Draw the base circle
     drawBaseCircle(task.from, task.to);
 
-    // Add event listeners for dragging
+    // Add fresh event listeners for dragging
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragLine;
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
 
-    // Draw the draggable line if a selected angle exists
-    if (selectedAngle !== null) {
-        drawLineAndLabel(selectedAngle, task.target, "orange");
-    }
+    // Do not draw the line initially
 }
 
 // Draw the base circle and labels
@@ -253,4 +258,6 @@ function dragLine(event) {
 
 function endDrag() {
     isDragging = false;
+    dragStartMouseAngle = null;
+    dragStartAngle = null;
 }
