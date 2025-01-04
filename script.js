@@ -1,4 +1,4 @@
-// Updated script.js for responsive circle, improved label placement, dynamic target visibility, and task descriptions
+// Updated script.js for response submission fix with validated angles
 const apiBaseUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL
 
 let tasks = [];
@@ -156,6 +156,9 @@ document
             alert("Drag the line to set your input.");
             return;
         }
+
+        const roundedAngle = Math.round(selectedAngle); // Ensure angle is an integer
+
         const task = tasks[currentTaskIndex];
         try {
             const response = await fetch(`${apiBaseUrl}/submit_response`, {
@@ -164,7 +167,7 @@ document
                 body: JSON.stringify({
                     name: participantName,
                     task_id: task.id,
-                    logged_angle: selectedAngle,
+                    logged_angle: roundedAngle, // Submit rounded angle
                 }),
             });
 
