@@ -232,8 +232,8 @@ function dragLine(event) {
     const x = event.clientX - rect.left - canvas.width / 2;
     const y = canvas.height / 2 - (event.clientY - rect.top);
 
-    let angle = Math.atan2(-y, x) * (180 / Math.PI); // Reverse y for clockwise dragging
-    angle = (90 - angle + 360) % 360;
+    let angle = Math.atan2(y, x) * (180 / Math.PI); // Use atan2 for smooth dragging
+    angle = (angle + 360) % 360; // Normalize angle to 0-360
 
     selectedAngle = angle; // Update selected angle
     drawTaskCircle(tasks[currentTaskIndex]); // Redraw the task with the updated line
