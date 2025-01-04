@@ -23,7 +23,7 @@ function resizeCanvas() {
     canvas.width = Math.min(window.innerWidth * 0.8, 400);
     canvas.height = canvas.width;
     radius = canvas.width / 3;
-    if (tasks.length > 0) {
+    if (tasks.length > 0 && tasks[currentTaskIndex]) {
         drawCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to);
     }
 }
@@ -54,18 +54,10 @@ function drawCircle(from, to) {
     ctx.stroke();
 
     // Draw labels
-    const labelPositions = [
-        { name: from, xOffset: 0, yOffset: 0 }, // Center
-        { name: to, xOffset: 0, yOffset: -radius - 20 }, // Top
-    ];
-
-    labelPositions.forEach((label) => {
-        const x = canvas.width / 2 + (label.xOffset || 0);
-        const y = canvas.height / 2 + (label.yOffset || 0);
-        ctx.font = "14px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(label.name, x, y);
-    });
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(from, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(to, canvas.width / 2, canvas.height / 2 - radius - 20);
 
     // Draw draggable line
     const task = tasks[currentTaskIndex];
@@ -79,22 +71,19 @@ function drawCircle(from, to) {
         );
         ctx.strokeStyle = currentTaskIndex === 0 ? "green" : "orange"; // Green for Task 0
         ctx.stroke();
-
-        // Display target label dynamically
-        const target = tasks[currentTaskIndex].target;
-        const targetX =
-            canvas.width / 2 + (radius + 20) * Math.cos((angle * Math.PI) / 180);
-        const targetY =
-            canvas.height / 2 - (radius + 20) * Math.sin((angle * Math.PI) / 180);
-        ctx.fillText(target, targetX, targetY);
     }
 }
 
 // Fetch tasks
-fetch(`${apiBaseUrl}/tasks`)
-    .then((response) => response.json())
-    .then((data) => (tasks = data))
-    .catch((error) => alert("Could not load tasks."));
+async function fetchTasks() {
+    try {
+        const response = await fetch(`${apiBaseUrl}/tasks`);
+        tasks = await response.json();
+    } catch (error) {
+        alert("Could not load tasks. Please try again.");
+        console.error("Error fetching tasks:", error);
+    }
+}
 
 // Start task
 document.getElementById("startTask").addEventListener("click", () => {
@@ -106,6 +95,11 @@ document.getElementById("startTask").addEventListener("click", () => {
     document.getElementById("taskForm").style.display = "none";
     document.getElementById("instructionSection").style.display = "block";
     document.getElementById("instructionsText").innerText = INSTRUCTION_TEXT;
+
+    // Ensure tasks are loaded before proceeding
+    fetchTasks().then(() => {
+        document.getElementById("proceedToTask").disabled = false;
+    });
 });
 
 // Proceed to Task 0 (Showcase Example)
@@ -116,7 +110,12 @@ document
 // Load task
 function loadTask(index) {
     const task = tasks[index];
-    drawCircle(task.from, task.to); // Draw circle with labels
+    if (!task) {
+        alert("Task data is not available. Please refresh the page.");
+        return;
+    }
+
+    drawCircle(task.from, task.to);
 
     document.getElementById("taskSection").style.display = "block";
     document.getElementById("taskDescription").innerText = `
@@ -125,8 +124,8 @@ function loadTask(index) {
         Point to the ${task.target}.
     `;
 
-    // For tasks 1 and onward, allow dragging
     if (index > 0) {
+        // Enable drag for tasks 1+
         canvas.addEventListener("mousedown", startDrag);
         canvas.addEventListener("mousemove", dragLine);
         canvas.addEventListener("mouseup", endDrag);
@@ -134,6 +133,7 @@ function loadTask(index) {
         document.getElementById("submitResponse").style.display = "block";
         document.getElementById("startActualTasks").style.display = "none";
     } else {
+        // Showcase example for Task 0
         document.getElementById("submitResponse").style.display = "none";
         document.getElementById("startActualTasks").style.display = "block";
     }
@@ -174,9 +174,8 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
         return;
     }
 
-    const roundedAngle = Math.round(selectedAngle); // Ensure angle is an integer
+    const roundedAngle = Math.round(selectedAngle);
     const normalizedAngle = (roundedAngle + 360) % 360; // Normalize angle
-    console.log("Submitting angle:", normalizedAngle);
 
     const task = tasks[currentTaskIndex];
     try {
@@ -186,12 +185,11 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
             body: JSON.stringify({
                 name: participantName,
                 task_id: task.id,
-                logged_angle: normalizedAngle, // Submit normalized angle
+                logged_angle: normalizedAngle,
             }),
         });
 
         if (response.status === 204) {
-            // Move to the next task
             currentTaskIndex++;
             if (currentTaskIndex < tasks.length) {
                 loadTask(currentTaskIndex);
@@ -201,11 +199,10 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
                 fetchResults();
             }
         } else {
-            console.error("Unexpected response:", response);
             alert("Failed to submit response. Please try again.");
         }
     } catch (error) {
-        console.error("Error submitting response:", error);
         alert("Failed to submit response. Please try again later.");
+        console.error("Error submitting response:", error);
     }
 });
