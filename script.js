@@ -152,10 +152,7 @@ function updateTaskDescription(task) {
         Facing the ${task.to}.
         Point to the ${task.target}.
     `;
-    
-    // Update both the above and below descriptions
     document.getElementById("taskDescription").innerText = descriptionText;
-    document.getElementById("taskDescriptionBelow").innerText = descriptionText;
 }
 
 // Showcase Example (Task 0)
@@ -166,11 +163,8 @@ function drawShowcaseCircle(task) {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the circle and north line
     drawBaseCircle(task.from, task.to);
 
-    // Pre-set the line to the correct angle
     const angle = (90 - task.angle + 360) % 360;
     drawLineAndLabel(angle, task.target, "green");
     document.getElementById("startActualTasks").style.display = "block";
@@ -184,29 +178,22 @@ function drawTaskCircle(task) {
         return;
     }
 
-    // Clear the canvas and reset draggable state
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    selectedAngle = null; // Reset selected angle
+    selectedAngle = null;
 
-    // Remove previous listeners to avoid duplication
     canvas.onmousedown = null;
     canvas.onmousemove = null;
     canvas.onmouseup = null;
     canvas.onmouseleave = null;
 
-    // Draw the base circle
     drawBaseCircle(task.from, task.to);
 
-    // Add fresh event listeners for dragging
     canvas.onmousedown = startDrag;
     canvas.onmousemove = dragLine;
     canvas.onmouseup = endDrag;
     canvas.onmouseleave = endDrag;
-
-    // Do not draw the line initially
 }
 
-// Draw the base circle and labels
 function drawBaseCircle(from, to) {
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
@@ -224,7 +211,6 @@ function drawBaseCircle(from, to) {
     ctx.fillText(to, canvas.width / 2, canvas.height / 2 - radius - 20);
 }
 
-// Draw the line and label dynamically
 function drawLineAndLabel(angle, label, color) {
     const lineEndX =
         canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180);
@@ -245,7 +231,6 @@ function drawLineAndLabel(angle, label, color) {
     ctx.fillText(label, labelX, labelY);
 }
 
-// Dragging functionality
 function startDrag(event) {
     isDragging = true;
 

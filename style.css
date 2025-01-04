@@ -13,7 +13,7 @@ h1, h2 {
 form, #taskSection, #resultSection {
     margin: 20px auto;
     width: 90%;
-    max-width: 600px;
+    max-width: 800px;
     text-align: center;
 }
 
@@ -51,30 +51,48 @@ button:hover {
     gap: 20px;
 }
 
-/* Task Descriptions */
-#taskDescription, #taskDescriptionBelow {
+/* Task Instructions */
+.task-instructions {
     font-size: 16px;
     line-height: 1.5;
     margin: 10px auto;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
 }
 
-/* Task Image */
+/* Task Layout: Image and Canvas */
+.task-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.task-image {
+    flex: 1;
+    max-width: 300px;
+    text-align: center;
+}
+
 #taskImage {
     width: 100%;
-    max-width: 400px;
     height: auto;
-    margin: 10px 0;
+    max-width: 300px;
     display: block;
+    margin: 0 auto;
 }
 
-/* Canvas Container */
+.task-canvas {
+    flex: 1;
+    max-width: 400px;
+}
+
 .canvas-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px auto;
+    margin: 0 auto;
     width: 100%;
     max-width: 400px;
     height: auto;

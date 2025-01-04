@@ -23,19 +23,20 @@
     <div id="taskSection" style="display:none;">
         <h2>Task</h2>
         
-        <!-- Task Description Above -->
-        <p id="taskDescription" class="description-above"></p>
+        <!-- Task Instructions Above -->
+        <p id="taskDescription" class="task-instructions"></p>
         
-        <!-- Task Image -->
-        <img src="images/object_array.png" alt="Object Array" id="taskImage">
-        
-        <!-- Canvas Container -->
-        <div class="canvas-container">
-            <canvas id="circleCanvas"></canvas>
+        <!-- Task Layout: Image on Left, Canvas on Right -->
+        <div class="task-container">
+            <div class="task-image">
+                <img src="images/object_array.png" alt="Object Array" id="taskImage">
+            </div>
+            <div class="task-canvas">
+                <div class="canvas-container">
+                    <canvas id="circleCanvas"></canvas>
+                </div>
+            </div>
         </div>
-        
-        <!-- Task Description Below -->
-        <p id="taskDescriptionBelow" class="description-below"></p>
         
         <!-- Start Actual Tasks Button -->
         <button type="button" id="startActualTasks" style="display:none;">Start Actual Tasks</button>
