@@ -33,7 +33,7 @@ function resizeCanvas() {
     }
 }
 
-// Fetch tasks
+// Fetch tasks and automatically load the showcase example
 async function fetchTasks() {
     try {
         const response = await fetch(`${apiBaseUrl}/tasks`);
@@ -44,7 +44,7 @@ async function fetchTasks() {
             return;
         }
 
-        // Automatically load the showcase example (Task 0)
+        // Automatically load Task 0 (Showcase)
         drawShowcaseCircle(tasks[0]);
 
         // Enable "Proceed to Tasks" button
@@ -55,7 +55,7 @@ async function fetchTasks() {
     }
 }
 
-// Start task
+// Start task flow
 document.getElementById("startTask").addEventListener("click", () => {
     participantName = document.getElementById("name").value;
     if (!participantName) {
@@ -71,12 +71,14 @@ document.getElementById("startTask").addEventListener("click", () => {
 });
 
 // Proceed to Task 0 (Showcase Example)
-document.getElementById("proceedToTask").addEventListener("click", () => {
-    currentTaskIndex = 0; // Start with Task 0
-    drawShowcaseCircle(tasks[0]); // Showcase example
-    document.getElementById("instructionSection").style.display = "none";
-    document.getElementById("taskSection").style.display = "block";
-});
+document
+    .getElementById("proceedToTask")
+    .addEventListener("click", () => {
+        currentTaskIndex = 0; // Start with Task 0
+        drawShowcaseCircle(tasks[0]); // Showcase example
+        document.getElementById("instructionSection").style.display = "none";
+        document.getElementById("taskSection").style.display = "block";
+    });
 
 // Start the actual tasks
 document
@@ -218,15 +220,11 @@ function dragLine(event) {
     const x = event.clientX - rect.left - canvas.width / 2;
     const y = canvas.height / 2 - (event.clientY - rect.top);
 
-    // Calculate the angle dynamically
     let angle = Math.atan2(y, x) * (180 / Math.PI);
-    angle = (90 - angle + 360) % 360; // Adjust angle for canvas orientation
+    angle = (90 - angle + 360) % 360;
 
     selectedAngle = angle; // Update selected angle
-
-    // Redraw the task with the updated draggable line
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBaseCircle(tasks[currentTaskIndex].from, tasks[currentTaskIndex].to);
+    drawTaskCircle(tasks[currentTaskIndex]); // Redraw the task with the updated line
     drawLineAndLabel(selectedAngle, tasks[currentTaskIndex].target, "orange");
 }
 
