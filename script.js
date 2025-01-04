@@ -1,4 +1,4 @@
-const backendUrl = "http://localhost:5001"; // Replace with your backend URL when deployed
+const backendUrl = "https://perspective-task-backend.onrender.com"; // Replace with your backend URL when deployed
 let taskId = 0;
 let loggedAngle = null; // Start with no line drawn
 let currentTask = null;
