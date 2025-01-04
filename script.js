@@ -37,16 +37,15 @@ function getMouseAngle(event) {
     return (angle + 360) % 360; // Normalize angle
 }
 
-// Draw the circle with specific labels
 function drawCircle(from, to) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw circle
+    // Draw the circle
     ctx.beginPath();
     ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
     ctx.stroke();
 
-    // Draw north line
+    // Draw the north line
     ctx.beginPath();
     ctx.moveTo(canvas.width / 2, canvas.height / 2);
     ctx.lineTo(canvas.width / 2, canvas.height / 2 - radius);
@@ -61,29 +60,34 @@ function drawCircle(from, to) {
 
     // Determine the angle for the line
     const task = tasks[currentTaskIndex];
+    if (!task) {
+        console.error("No task data available for the current index.");
+        return;
+    }
+
     const angle = currentTaskIndex === 0 ? task.angle : selectedAngle;
 
     if (angle !== null) {
-        // Draw the line
+        // Calculate line endpoint
         const lineEndX =
             canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180);
         const lineEndY =
             canvas.height / 2 - radius * Math.sin((angle * Math.PI) / 180);
 
+        // Draw the line
         ctx.beginPath();
         ctx.moveTo(canvas.width / 2, canvas.height / 2);
         ctx.lineTo(lineEndX, lineEndY);
         ctx.strokeStyle = currentTaskIndex === 0 ? "green" : "orange"; // Green for Task 0
         ctx.stroke();
 
-        // Add target label dynamically at the end of the line
-        const target = task.target;
+        // Draw the target label dynamically
         const labelX =
             canvas.width / 2 + (radius + 20) * Math.cos((angle * Math.PI) / 180);
         const labelY =
             canvas.height / 2 - (radius + 20) * Math.sin((angle * Math.PI) / 180);
 
-        ctx.fillText(target, labelX, labelY);
+        ctx.fillText(task.target, labelX, labelY);
     }
 }
 
