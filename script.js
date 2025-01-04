@@ -53,24 +53,37 @@ function drawCircle(from, to) {
     ctx.strokeStyle = "black";
     ctx.stroke();
 
-    // Draw labels
+    // Draw labels for "from" and "to" objects
     ctx.font = "14px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(from, canvas.width / 2, canvas.height / 2);
-    ctx.fillText(to, canvas.width / 2, canvas.height / 2 - radius - 20);
+    ctx.fillText(from, canvas.width / 2, canvas.height / 2); // Center label
+    ctx.fillText(to, canvas.width / 2, canvas.height / 2 - radius - 20); // Top label
 
-    // Draw draggable line
+    // Determine the angle for the line
     const task = tasks[currentTaskIndex];
-    const angle = currentTaskIndex === 0 ? task.angle : selectedAngle; // Correct angle for Task 0
+    const angle = currentTaskIndex === 0 ? task.angle : selectedAngle;
+
     if (angle !== null) {
+        // Draw the line
+        const lineEndX =
+            canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180);
+        const lineEndY =
+            canvas.height / 2 - radius * Math.sin((angle * Math.PI) / 180);
+
         ctx.beginPath();
         ctx.moveTo(canvas.width / 2, canvas.height / 2);
-        ctx.lineTo(
-            canvas.width / 2 + radius * Math.cos((angle * Math.PI) / 180),
-            canvas.height / 2 - radius * Math.sin((angle * Math.PI) / 180)
-        );
+        ctx.lineTo(lineEndX, lineEndY);
         ctx.strokeStyle = currentTaskIndex === 0 ? "green" : "orange"; // Green for Task 0
         ctx.stroke();
+
+        // Add target label dynamically at the end of the line
+        const target = task.target;
+        const labelX =
+            canvas.width / 2 + (radius + 20) * Math.cos((angle * Math.PI) / 180);
+        const labelY =
+            canvas.height / 2 - (radius + 20) * Math.sin((angle * Math.PI) / 180);
+
+        ctx.fillText(target, labelX, labelY);
     }
 }
 
