@@ -13,7 +13,7 @@ h1, h2 {
 form, #taskSection, #resultSection {
     margin: 20px auto;
     width: 90%;
-    max-width: 800px;
+    max-width: 900px; /* Increased max width for more space */
     text-align: center;
 }
 
@@ -57,7 +57,7 @@ button:hover {
     line-height: 1.5;
     margin: 10px auto;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px; /* Increased width for instructions */
 }
 
 /* Task Layout: Image and Canvas */
@@ -66,21 +66,22 @@ button:hover {
     justify-content: center;
     align-items: flex-start;
     gap: 20px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Ensure it stacks on smaller screens */
 }
 
 /* Task Image */
 .task-image {
     flex: 1;
-    max-width: 50%; /* Dynamically adjust for responsiveness */
+    max-width: 60%; /* Increased space allocation for the image */
     text-align: center;
 }
 
 #taskImage {
     width: 100%; /* Make the image fill its container */
-    max-width: 600px; /* Limit to 600px to avoid excessive scaling */
+    max-width: 800px; /* Increased max width for a larger image */
     height: auto; /* Maintain aspect ratio */
     margin: 0 auto;
+    display: block;
 }
 
 /* Task Canvas */
