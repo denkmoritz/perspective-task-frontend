@@ -219,27 +219,3 @@ function drawLineAndLabel(angle, label, color) {
 
     ctx.fillText(label, labelX, labelY);
 }
-
-// Dragging Logic
-function startDrag(event) {
-    isDragging = true;
-}
-
-function dragLine(event) {
-    if (!isDragging) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left - canvas.width / 2;
-    const y = canvas.height / 2 - (event.clientY - rect.top);
-
-    let angle = Math.atan2(y, x) * (180 / Math.PI); // Use atan2 for smooth dragging
-    angle = (angle + 360) % 360; // Normalize angle to 0-360
-
-    selectedAngle = angle; // Update selected angle
-    drawTaskCircle(tasks[currentTaskIndex]); // Redraw the task with the updated line
-    drawLineAndLabel(selectedAngle, tasks[currentTaskIndex].target, "orange");
-}
-
-function endDrag(event) {
-    isDragging = false;
-}
