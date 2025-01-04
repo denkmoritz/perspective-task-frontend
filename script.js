@@ -109,15 +109,18 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
     const normalizedAngle = (roundedAngle + 360) % 360; // Normalize angle
 
     const task = tasks[currentTaskIndex];
+    const payload = {
+        name: participantName,
+        task_id: task.id,
+        logged_angle: normalizedAngle,
+    };
+    console.log("Submitting payload:", payload);
+
     try {
         const response = await fetch(`${apiBaseUrl}/submit_response`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: participantName,
-                task_id: task.id,
-                logged_angle: normalizedAngle, // Send logged_angle directly
-            }),
+            body: JSON.stringify(payload),
         });
 
         if (response.status === 204) {
@@ -132,6 +135,8 @@ document.getElementById("submitResponse").addEventListener("click", async () => 
                 fetchResults();
             }
         } else {
+            const errorText = await response.text();
+            console.error("Error response from server:", errorText);
             alert("Failed to submit response. Please try again.");
         }
     } catch (error) {
@@ -244,18 +249,13 @@ function startDrag(event) {
 function dragLine(event) {
     if (!isDragging) return;
 
-    // Get the mouse position relative to the canvas center
     const rect = canvas.getBoundingClientRect();
     const mouseX = event.clientX - rect.left - canvas.width / 2;
-    const mouseY = canvas.height / 2 - (event.clientY - rect.top); // Inverted Y-axis
+    const mouseY = canvas.height / 2 - (event.clientY - rect.top);
 
-    // Calculate the angle in degrees
-    const angle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
-
-    // Adjust the angle: 0 degrees at the top, increasing clockwise
+    const angle = Math.atan2(-mouseY, mouseX) * (180 / Math.PI); // Negative Y for top reference
     selectedAngle = (90 - angle + 360) % 360;
 
-    // Redraw the circle with the updated line
     const currentTask = tasks[currentTaskIndex];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBaseCircle(currentTask?.from, currentTask?.to);
