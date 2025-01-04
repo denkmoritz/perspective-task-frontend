@@ -69,20 +69,21 @@ button:hover {
     flex-wrap: wrap;
 }
 
+/* Task Image */
 .task-image {
     flex: 1;
-    max-width: 300px;
+    max-width: 50%; /* Dynamically adjust for responsiveness */
     text-align: center;
 }
 
 #taskImage {
-    width: 100%;
-    height: auto;
-    max-width: 300px;
-    display: block;
+    width: 100%; /* Make the image fill its container */
+    max-width: 600px; /* Limit to 600px to avoid excessive scaling */
+    height: auto; /* Maintain aspect ratio */
     margin: 0 auto;
 }
 
+/* Task Canvas */
 .task-canvas {
     flex: 1;
     max-width: 400px;
