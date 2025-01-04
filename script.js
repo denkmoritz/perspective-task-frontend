@@ -73,26 +73,22 @@ document.getElementById("startTask").addEventListener("click", () => {
 });
 
 // Proceed to Task 0 (Showcase Example)
-document
-    .getElementById("proceedToTask")
-    .addEventListener("click", () => {
-        currentTaskIndex = 0; // Start with Task 0
-        drawShowcaseCircle(tasks[0]); // Showcase example
-        document.getElementById("instructionSection").style.display = "none";
-        document.getElementById("taskSection").style.display = "block";
-        updateTaskDescription(tasks[0]); // Add task text
-    });
+document.getElementById("proceedToTask").addEventListener("click", () => {
+    currentTaskIndex = 0; // Start with Task 0
+    drawShowcaseCircle(tasks[0]); // Showcase example
+    document.getElementById("instructionSection").style.display = "none";
+    document.getElementById("taskSection").style.display = "block";
+    updateTaskDescription(tasks[0]); // Add task text
+});
 
 // Start the actual tasks
-document
-    .getElementById("startActualTasks")
-    .addEventListener("click", () => {
-        currentTaskIndex = 1; // Start Task 1
-        drawTaskCircle(tasks[currentTaskIndex]);
-        document.getElementById("startActualTasks").style.display = "none";
-        document.getElementById("submitResponse").style.display = "block";
-        updateTaskDescription(tasks[currentTaskIndex]); // Add task text
-    });
+document.getElementById("startActualTasks").addEventListener("click", () => {
+    currentTaskIndex = 1; // Start Task 1
+    drawTaskCircle(tasks[currentTaskIndex]);
+    document.getElementById("startActualTasks").style.display = "none";
+    document.getElementById("submitResponse").style.display = "block";
+    updateTaskDescription(tasks[currentTaskIndex]); // Add task text
+});
 
 // Submit response for actual tasks
 document.getElementById("submitResponse").addEventListener("click", async () => {
